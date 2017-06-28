@@ -2,7 +2,7 @@
   if(isset($_POST['btn'])) {
   	if (isset($_FILES)) {
   	  $tests=[]; // массив тестов
-  	  if (PHP_OS=="WINNT") { $dest="tests\\"; } else {$dest="tests/";}
+  	  $dest="tests".DIRECTORY_SEPARATOR;
   	  $pattern="/^[0-9a-z]*.json$/"; // латинские буквы и цифры.json
   	  if (!file_exists($dest)) { mkdir($dest); }
       foreach($_FILES as $key => $val) {
