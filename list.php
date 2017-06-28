@@ -1,16 +1,8 @@
 <?php
 
 include 'lib.php';
-$cdir=scandir($dest);
-$filelist=[];
 
-foreach ($cdir as $key => $value) { 
-  if (! is_dir($value)) {
-     preg_match($pattern, $value, $matches);
-     if (count($matches) < 1) { continue; }
-     $filelist[]=$value;
-  } 
-}
+readDest($dest);
 
 // генерирует liшки для html
 function setList() {
