@@ -42,5 +42,6 @@ function setList() {
     setList(); 
   ?>
   </ul>
+  <a href="admin.php" target="_blank">Загрузить тесты</a>
 </body>
 </html>
