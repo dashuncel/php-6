@@ -9,20 +9,7 @@ function setList() {
   global $filelist;
   foreach ($filelist as $test) {
   	$test=explode(".",$test)[0];
-  	switch ($test) {
-  		case 'astrology':
-  			$test_name="Тест по астрологии";
-  			break;
-  		case 'astronomy':
-  			$test_name="Тест по астрономии";
-  			break;
-  		case 'philosophy':
-  			$test_name="Тест по философии";
-  			break;
-  		default:
-  			$test_name="Неизвестный тест";
-  			break;
-  	}
+    $test_name=getTestName($test);
    	echo "<li><a href=\"test.php?test=$test\">$test_name</a></li>";
   }
 }
@@ -36,12 +23,11 @@ function setList() {
 	<meta charset="utf-8">
 </head>
 <body>
-  <h1>Тесты</h1>
-  <ul class="filelist">
+  <?php getMainMenu(); ?>
+  <ul class="filelist list">
   <?php 
     setList(); 
   ?>
   </ul>
-  <a href="admin.php" target="_blank">Загрузить тесты</a>
 </body>
 </html>
