@@ -6,7 +6,17 @@ $filelist=[]; // список файлов
 
 // функция читает директорию с тестами
 function readDest($destination) {
+  if (! file_exists($destination)) { 
+    mkdir($destination);
+    echo "директория $destination не существует";
+    exit; 
+  }
   $cdir=scandir($destination);
+  if (! $cdir) {
+    echo "тесты не загружены";
+    exit;
+  }
+
   global $filelist;
   global $pattern;
 
@@ -41,7 +51,7 @@ function getTestName($test) {
 // функция отстраивает главное меню
 function getMainMenu() {
   echo "<ul class=\"menu\">
-        <li><a href=\"admin.php\">Администриование</a></li>
+        <li><a href=\"admin.php\">Администрирование</a></li>
         <li><a href=\"list.php\">Список тестов</a></li>
         </ul>";
 }

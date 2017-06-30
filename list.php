@@ -2,9 +2,9 @@
 
 include 'lib.php';
 
-readDest($dest);
+readDest($dest); // чтение директории и заполнение глобальной переменной $filelist
 
-// генерирует liшки для html
+// генерирует liшки для html со списком файлов
 function setList() {
   global $filelist;
   foreach ($filelist as $test) {

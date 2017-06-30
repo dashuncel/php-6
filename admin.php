@@ -1,34 +1,37 @@
 <?php
-  include 'lib.php';
+    
+include 'lib.php';
 
-  if(isset($_POST['btn'])) {
-  	if (isset($_FILES)) {
-
-  	  if (! file_exists($dest)) { mkdir($dest); }
-      foreach($_FILES as $key => $val) {
-        // проверка на имя:
-        foreach($val['name'] as $sub_key => $filename) {
-          // проверка существования файла:
-          if (! file_exists($val['tmp_name'][$sub_key])) { 
-            echo "Файл $filename по какой-то причине не загружен на сервер!<br/>";
-            continue; 
-          }
-          // проверка расширения файла:
-          preg_match($pattern, $filename, $matches); 
-          if (count($matches) < 1) {
-          	echo "Файл $filename неверного формата<br/>";
-          	continue;
-          }
-          // загрузка и проверка загрузки файла в каталог:
-          if (move_uploaded_file($val['tmp_name'][$sub_key], $dest.$filename)) {
-             echo "Файл $filename успешно загружен в каталог $dest<br/>";
-          } else {
-             echo "Ошибка загрузки файла $filename в каталог $dest<br/>";
-          }
-        }
+$result=[];
+if(isset($_POST['btn']) && isset($_FILES)) {
+  if (! file_exists($dest)) { mkdir($dest); }
+  foreach($_FILES as $key => $val) {
+    foreach($val['name'] as $sub_key => $filename) {
+      
+      // проверка существования файла:
+      if (! file_exists($val['tmp_name'][$sub_key])) { 
+        $result[]="Файл $filename по какой-то причине не загружен на сервер!<br/>";
+        continue; 
       }
-  	}
+        
+      // проверка расширения файла:
+      preg_match($pattern, $filename, $matches); 
+      if (count($matches) < 1) {
+        $result[]="Файл $filename неверного формата<br/>";
+        continue;
+      }
+      
+      // загрузка и проверка загрузки файла в каталог:
+      if (move_uploaded_file($val['tmp_name'][$sub_key], $dest.$filename)) {
+        $result[]="Файл $filename успешно загружен в каталог $dest<br/>";
+      } else {
+        $result[]="Ошибка загрузки файла $filename в каталог $dest<br/>";
+      }
+    }
   }
+}
+echo implode($result, "\n"); // здесь хотелось бы вывести это в нужном месте. Видимо чуть позже сделаю.
+
 ?>
 
 <!DOCTYPE html>
@@ -89,7 +92,6 @@
       fileContent.classList.remove('hidden');
       reader.addEventListener('load', event=> {
         fileContent.value = event.target.result;
-        console.log(fileContent.value);
       });
       reader.readAsText(myfile);
     }

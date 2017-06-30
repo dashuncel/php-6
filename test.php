@@ -19,8 +19,20 @@ if (isset($_GET['test'])) {
 }
 
 // обработка post-запроса
+$results=[];
+$num=0;
 if (isset($_POST['btn_check'])) {
-
+  foreach($_POST as $key => $ans) {
+    if (!is_numeric($key)) { continue; }
+    $num=++$num;
+    if (is_array($ans)) {$ans=implode($ans,",");} // чекбоксы собираем из массива
+    if ($jsonData[$key]['Ответ'] != $ans) {
+      $results[]="$num. Ответ неверный. Правильный ответ ".$jsonData[$key]['Ответ'];
+    } else {
+      $results[]="$num. Ответ верный";
+    }
+  }
+  echo "<pre>".implode($results,"\n")."</pre>";
 }
 
 // заполнение формы в HTML
@@ -44,11 +56,12 @@ function fillForm() {
          break;
       }    
     }
-    echo "<label>$question</label>";
+    $nom=++$key;
+    echo "<label class=\"question\">$nom. $question</label>";
     echo "<ul class=\"answers\">";
     if (count(explode(",", $r_answer)) > 1) {
       foreach ($answers as $key => $ans) {
-        echo "<li><input type=\"checkbox\" name=\"$name\" value=\"$key\"/>$ans</li>";
+        echo "<li><input type=\"checkbox\" name=\"$name"."[]"."\" value=\"$key\"/>$ans</li>";
       }  
     } else {
       foreach ($answers as $key => $ans) {
@@ -69,31 +82,51 @@ function fillForm() {
 </head>
 <body>
    <?php getMainMenu(); ?>
-   <form action="" method="POST" enctype="multipart/form-data"> 
+   <form>
+   <fieldset class='hidden'>
+      <legend>Результат</legend>
+      <output class='farea'></output>
+   </fieldset>
+   </form>
+   <form action="" method="POST" enctype="multipart/form-data" class="mainform"> 
      <fieldset>
        <legend><?=$nametest?></legend>
        <?php fillForm(); ?>
        <br/><input type="submit" value="Проверить ответы" name="btn_check"><br/>
      </fieldset>
    </form>
-   <div class="result hidden"></div>
    <script type="text/javascript">
      /* проверка формы на клиентской стороне */
     'use strict';
     const btn = document.querySelector("[type=submit]");
-    const questions=document.getElementsByTagName('input');
+    const ans = document.querySelectorAll("[type=input]");
+    const quests=document.getElementsByClassName('question');
+    const output=document.querySelector('output');
+
     btn.addEventListener('click', chkForm);
-    Array.from(questions).forEach(q => {q.addEventListener('change',unsetErr)});
+    Array.from(ans).forEach(a => {a.addEventListener('change',undetErr)});
 
+    //--проверка формы средствами JS:
     function chkForm(event) {
-      const area=document.getElementsByClassName('result');
-
-      Array.from(questions).forEach(quest => chkElement(quest));
-      // проверяем число ошибочных:
+      const fldset=document.querySelector('fieldset.hidden');
+      if (fldset) { fldset.classList.remove('hidden'); }
+      Array.from(quests).forEach(quest => chkElement(quest)); // проверяем каждый вопрос, выбран ли ответ
       const errEl=document.getElementsByClassName('error');
+      
       if (errEl.length > 0) {
-        area.value = "Внимание! Не выбраны ответы для " + errEl.length + " вопр.(выделены красным цветом). Заполните всю форму."
+        output.textContent = "Внимание! Не выбраны ответы для " + errEl.length + " вопр.(выделены красным цветом). Заполните всю форму.";
         event.preventDefault();
+      } else {
+        /*
+        const form=document.getElementsByClassName('mainform')[0];
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData(form);
+        xhr.addEventListener('load', (e) => {
+           output.textContent=e.results;
+        });
+        xhr.open('POST', '');
+        xhr.send(formData);
+        */
       }
     }
 
@@ -101,9 +134,16 @@ function fillForm() {
       event.target.parentElement.parentElement.previousElementSibling.classList.remove('error');
     }
 
-    function chkElement(question) {
-      const grp= document.getElementsByName(question.name);
-      question.parentElement.parentElement.previousElementSibling.classList.
+    function chkElement(quest) {
+      const li=quest.nextElementSibling.firstChild.firstChild.getAttribute('name');
+      const grp=document.getElementsByName(li);
+      let chked=Array.from(grp).filter(g => { return g.checked; }); 
+      if (chked.length == 0) {
+        quest.classList.add('error');
+      }
+      else {
+        quest.classList.remove('error');
+      }
     }
    </script>
 </body>

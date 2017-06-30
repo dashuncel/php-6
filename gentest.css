@@ -2,15 +2,15 @@
 .menu {
   list-style: none;
   display: flex; 
-  margin: 20px 5px 5px 5px;
-  padding: 10px;
+  margin: 0px;
+  padding: 20px;
   text-align: center;
   background:   #EEE;
   width: 100%;
 }
 
 .menu a {
-  border: 1px outset gray; 
+  border: 1px outset #0066A2; 
   text-decoration: none;
   font-family: 'Ubuntu Condensed', sans-serif;
   letter-spacing: 2px;
@@ -21,6 +21,17 @@
   text-transform: uppercase;
   display: inline-block;
   transition: color .2s;
+}
+
+.menu a:before {
+  content: " ";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F58262;
+  opacity: 0;
+  transition: .5s ease-in-out;
 }
 
 input[type="submit"] {
@@ -123,3 +134,6 @@ form {
   margin : 15px;
 }
 
+output {
+  border: none;
+}
