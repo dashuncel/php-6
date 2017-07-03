@@ -45,8 +45,7 @@ function getTestName($test) {
 
 // функция отстраивает главное меню
 function getMainMenu() {
-  $menu_str;
-
+  $menu_str='';
   $menu=["admin" => "Администрирование",
          "list" => "Список тестов"
         ];
