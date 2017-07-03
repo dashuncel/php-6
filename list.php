@@ -9,6 +9,7 @@ function setList() {
   global $filelist;
   foreach ($filelist as $test) {
     $test_name=getTestName($test);
+    if (!$test_name) { continue; } // если в файле отсутствует имя, считаем что файл неверный.
   	$test=explode(".",$test)[0];
    	echo "<li><a href=\"test.php?test=$test\">$test_name</a></li>";
   }

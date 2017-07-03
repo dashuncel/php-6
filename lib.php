@@ -33,7 +33,8 @@ function getTestName($test) {
   $data=file_get_contents($test);
   $jsonData=json_decode($data, JSON_UNESCAPED_UNICODE); 
   $test_name='';
-  if (! $jsonData) { $test_name='непонятное имя'; }
+  if (! $jsonData) { return ''; }
+  
   if (array_key_exists("Название", $jsonData[0])) { 
     $test_name=$jsonData[0]['Название'];
   }
