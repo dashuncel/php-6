@@ -5,7 +5,6 @@ $jsonData=[];
 
 // обработка get-запроса
 if (isset($_GET['test'])) {
-  $nametest=getTestName($_GET['test']);
   $result=array_search($_GET['test'].".json", $filelist);
   if ($result >= 0) {
     $data=file_get_contents($filelist[$result]);
@@ -16,21 +15,30 @@ if (isset($_GET['test'])) {
   } else {
     echo "Что-то пошло не так. Не могу найти файл с тестом ".$_GET["test"].".json"; 
   }
+  $nametest=$jsonData[0]['Название'];
+  $jsonData=$jsonData[0]['Вопросы'];
 }
 
 // обработка post-запроса
 $results=[];
-$num=0;
-if (isset($_POST['btn_check'])) {
-  foreach($_POST as $key => $ans) {
-    if (!is_numeric($key)) { continue; }
-    $num=++$num;
-    if (is_array($ans)) {$ans=implode($ans,",");} // чекбоксы собираем из массива
-    if ($jsonData[$key]['Ответ'] != $ans) {
-      $results[]="$num. Ответ неверный. Правильный ответ ".$jsonData[$key]['Ответ'];
-    } else {
-      $results[]="$num. Ответ верный";
+$nom=1;
+if ($_POST) {
+  foreach($jsonData as $key => $question) { // перебираем вопросы, есть ли ответ на вопрос?
+    if (! array_key_exists($key, $_POST)) {
+      $results[]="$nom. Ответ не предоставлен. Правильный ответ: ".$jsonData[$key]['Ответ'];
+      continue;
     }
+    if (is_array($_POST[$key])) {
+      $ans=implode($_POST[$key],","); // чекбоксы собираем из массива
+    } else {
+      $ans=$_POST[$key]; // радиокнопки - обычное значение
+    }
+    if ($jsonData[$key]['Ответ'] != $ans) {
+      $results[]="$nom. Ответ неверный. Ваш ответ: $ans. Правильный ответ: ".$jsonData[$key]['Ответ'];
+    } else {
+      $results[]="$nom. Ответ $ans верный";
+    }
+    $nom++;
   }
   echo "<pre>".implode($results,"\n")."</pre>";
 }
@@ -61,11 +69,11 @@ function fillForm() {
     echo "<ul class=\"answers\">";
     if (count(explode(",", $r_answer)) > 1) {
       foreach ($answers as $key => $ans) {
-        echo "<li><input type=\"checkbox\" name=\"$name"."[]"."\" value=\"$key\"/>$ans</li>";
+        echo "<li><input type=\"checkbox\" name=\"$name"."[]"."\" value=\"$key\" id=\"$name$key\"/><label for=\"$name$key\">$ans</label></li>";
       }  
     } else {
       foreach ($answers as $key => $ans) {
-        echo "<li><input type=\"radio\" name=\"$name\" value=\"$key\"/>$ans</li>";
+        echo "<li><input type=\"radio\" name=\"$name\" value=\"$key\" id=\"$name$key\"/><label for=\"$name$key\">$ans</label></li>";
       }
     }
     echo "</ul>";
@@ -81,11 +89,11 @@ function fillForm() {
   <link rel="stylesheet" href="gentest.css">
 </head>
 <body>
-   <?php getMainMenu(); ?>
+   <?php echo getMainMenu(); ?>
    <form>
    <fieldset class='hidden'>
       <legend>Результат</legend>
-      <output class='farea'></output>
+      <output class='farea'><?php echo "<pre>".implode($results,"\n")."</pre>"; ?></output>
    </fieldset>
    </form>
    <form action="" method="POST" enctype="multipart/form-data" class="mainform"> 
@@ -97,7 +105,7 @@ function fillForm() {
    </form>
    <script type="text/javascript">
      /* проверка формы на клиентской стороне */
-    'use strict';
+   'use strict';
     const btn = document.querySelector("[type=submit]");
     const ans = document.querySelectorAll("[type=input]");
     const quests=document.getElementsByClassName('question');
@@ -108,6 +116,7 @@ function fillForm() {
 
     //--проверка формы средствами JS:
     function chkForm(event) {
+      /*event.preventDefault();*/
       const fldset=document.querySelector('fieldset.hidden');
       if (fldset) { fldset.classList.remove('hidden'); }
       Array.from(quests).forEach(quest => chkElement(quest)); // проверяем каждый вопрос, выбран ли ответ
@@ -116,17 +125,19 @@ function fillForm() {
       if (errEl.length > 0) {
         output.textContent = "Внимание! Не выбраны ответы для " + errEl.length + " вопр.(выделены красным цветом). Заполните всю форму.";
         event.preventDefault();
-      } else {
-        /*
+      } else { /*
         const form=document.getElementsByClassName('mainform')[0];
         const xhr = new XMLHttpRequest();
         const formData = new FormData(form);
         xhr.addEventListener('load', (e) => {
+           console.log(e.results);
+           console.log(this.response);
+           console.log(this.responseText);
            output.textContent=e.results;
         });
-        xhr.open('POST', '');
-        xhr.send(formData);
-        */
+        xhr.open('POST', form.getAttribute('action'), true);
+        xhr.setRequestHeader('Content-Type', form.getAttribute('enctype'));
+        xhr.send(formData);*/
       }
     }
 

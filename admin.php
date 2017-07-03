@@ -42,7 +42,7 @@ echo implode($result, "\n"); // здесь хотелось бы вывести 
 	<meta charset="utf-8">
 </head>
 <body>
-  <?php getMainMenu(); ?>
+  <?php echo getMainMenu(); ?>
   <form action="" method="POST" enctype="multipart/form-data">
     <fieldset>
     <legend>Загрузчик тестов</legend>

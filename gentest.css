@@ -121,7 +121,7 @@ input[type="radio"] {
   cursor: pointer;
 }
 
-label {
+.question {
   color:  #00008B;
   font: italic bold 15px sans-serif;
 }

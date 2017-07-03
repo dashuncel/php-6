@@ -6,54 +6,54 @@ $filelist=[]; // список файлов
 
 // функция читает директорию с тестами
 function readDest($destination) {
+  $result=''; 
   if (! file_exists($destination)) { 
     mkdir($destination);
-    echo "директория $destination не существует";
-    exit; 
+    $result="директория $destination не существует";
   }
   $cdir=scandir($destination);
   if (! $cdir) {
-    echo "тесты не загружены";
-    exit;
+    $result="тесты не загружены";
   }
+  if ($result) { return $result; }
 
   global $filelist;
   global $pattern;
-
   foreach ($cdir as $key => $value) { 
     if (! is_dir($value)) {
       preg_match($pattern, $value, $matches);
       if (count($matches) < 1) { continue; }
-      $filelist[]=$value;
+      $filelist[]=$destination.$value;
     } 
   }
 }
 
 // функция возвращает удобочитаемое название по имени файла
 function getTestName($test) {
-  switch ($test) {
-      case 'astrology':
-        $test_name="Астрология";
-        break;
-      case 'astronomy':
-        $test_name="Астрономия";
-        break;
-      case 'philosophy':
-        $test_name="Философия";
-        break;
-      default:
-        $test_name="Неизвестный тест";
-        break;
+  $data=file_get_contents($test);
+  $jsonData=json_decode($data, JSON_UNESCAPED_UNICODE); 
+  $test_name='';
+  if (! $jsonData) { $test_name='непонятное имя'; }
+  if (array_key_exists("Название", $jsonData[0])) { 
+    $test_name=$jsonData[0]['Название'];
   }
   return $test_name;
 }
 
 // функция отстраивает главное меню
 function getMainMenu() {
-  echo "<ul class=\"menu\">
-        <li><a href=\"admin.php\">Администрирование</a></li>
-        <li><a href=\"list.php\">Список тестов</a></li>
-        </ul>";
+  $menu_str;
+
+  $menu=["admin" => "Администрирование",
+         "list" => "Список тестов"
+        ];
+
+  $menu_str="<ul class=\"menu\">";
+  foreach ($menu as $file => $item) { 
+    $menu_str.= "<li><a href=\"$file.php\">$item</a></li>"; 
+  }
+  $menu_str.="</ul>";
+  return $menu_str;
 }
 
 ?>

@@ -8,8 +8,8 @@ readDest($dest); // чтение директории и заполнение г
 function setList() {
   global $filelist;
   foreach ($filelist as $test) {
-  	$test=explode(".",$test)[0];
     $test_name=getTestName($test);
+  	$test=explode(".",$test)[0];
    	echo "<li><a href=\"test.php?test=$test\">$test_name</a></li>";
   }
 }
@@ -23,7 +23,7 @@ function setList() {
 	<meta charset="utf-8">
 </head>
 <body>
-  <?php getMainMenu(); ?>
+  <?php echo getMainMenu(); ?>
   <ul class="filelist list">
   <?php 
     setList(); 
